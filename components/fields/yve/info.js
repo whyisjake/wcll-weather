@@ -9,7 +9,7 @@ export default function FieldInfo(props) {
           There are two fields at Ygnacio Valley Elementary School. Field #1 is
           closest to the school and is named{" "}
           <a
-            href="https://www.legacy.com/us/obituaries/eastbaytimes/name/larry-byrne-obituary?id=17068146"
+            href="/larry-byrne"
             className="text-baseball-sky-600 hover:text-baseball-sky-700 transition-colors underline"
           >
             Larry Byrne Veterans Field
