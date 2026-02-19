@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const { getWeather, getWeatherDetails } = require("./_helpers");
 const fields = require("../../fields");
-const { getFieldStatus, setFieldStatus } = require("../../lib/fieldStatus");
+const { getFieldStatus, setFieldStatus, updateFieldStatus } = require("../../lib/fieldStatus");
 
 // Disable Next.js body parser so we can verify the Slack signature
 // against the raw request body.
@@ -145,8 +145,9 @@ function buildHelpBlocks() {
           "• `/weather <field>` — Current conditions\n" +
           "• `/weather <field> forecast` — Current conditions + 7-day forecast\n" +
           "• `/weather list` — Show all available fields\n" +
-          "• `/weather open` — Mark fields as open (admin only)\n" +
-          "• `/weather close [reason]` — Mark fields as closed (admin only)\n" +
+          "• `/weather open` — Mark fields as open\n" +
+          "• `/weather close [reason]` — Mark fields as closed\n" +
+          "• `/weather update <message>` — Add a status update message\n" +
           "• `/weather help` — This message",
       },
     },
@@ -372,15 +373,6 @@ export default async function handler(req, res) {
 
     // Route: open
     if (text === "open") {
-      const userId = params.get("user_id") || "";
-      const adminIds = (process.env.SLACK_ADMIN_USER_IDS || "").split(",").map((id) => id.trim());
-      if (!adminIds.includes(userId)) {
-        return res.status(200).json({
-          response_type: "ephemeral",
-          text: ":no_entry: You are not authorized to change field status.",
-        });
-      }
-
       const newStatus = await setFieldStatus(false);
       return res.status(200).json({
         response_type: "in_channel",
@@ -388,17 +380,25 @@ export default async function handler(req, res) {
       });
     }
 
-    // Route: close [reason]
-    if (text.startsWith("close")) {
-      const userId = params.get("user_id") || "";
-      const adminIds = (process.env.SLACK_ADMIN_USER_IDS || "").split(",").map((id) => id.trim());
-      if (!adminIds.includes(userId)) {
+    // Route: update <message>
+    if (text.startsWith("update")) {
+      const message = rawText.replace(/^update\s*/i, "").trim();
+      if (!message) {
         return res.status(200).json({
           response_type: "ephemeral",
-          text: ":no_entry: You are not authorized to change field status.",
+          text: ":warning: Please provide a message. Usage: `/weather update <message>`",
         });
       }
+      const newStatus = await updateFieldStatus(message);
+      const statusText = newStatus.isClosed ? ":red_circle: Closed" : ":large_green_circle: Open";
+      return res.status(200).json({
+        response_type: "in_channel",
+        text: `:pencil: *Field status update* (${newStatus.updated})\n${statusText} — ${message}`,
+      });
+    }
 
+    // Route: close [reason]
+    if (text.startsWith("close")) {
       const reason = rawText.replace(/^close\s*/i, "").trim();
       const newStatus = await setFieldStatus(true, reason);
       const reasonText = reason ? ` Reason: _${reason}_` : "";
