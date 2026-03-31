@@ -3,30 +3,30 @@ import _ from "lodash";
 import fields from "@/fields";
 import { useRouter } from "next/router";
 
+const SITE_URL = "https://fields.wclittleleague.org";
+
 export default function NewHead() {
   const router = useRouter();
   let { field } = router.query;
   const name = _.get(fields, [field, "name"], "");
+  const pageTitle = name
+    ? `${name} – Walnut Creek Little League`
+    : "Walnut Creek Little League Field Weather";
+  const pageUrl = `${SITE_URL}${router.asPath}`;
 
   return (
     <Head>
-      <title>Walnut Creek Little League – {name}</title>
-      <meta name="description" content="Fields, weather, status and more..." />
+      <title>{pageTitle}</title>
+      <meta name="description" content="Field weather, status, and forecasts for Walnut Creek Little League." />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <link
-        rel="shortcut icon"
-        href="https://assets.ngin.com/site_files/2365/favicon.ico"
-      />
-      <meta property="og:title" content="Home" />
+      <link rel="shortcut icon" href="/favicon.ico" />
+      <meta property="og:title" content={pageTitle} />
       <meta property="og:type" content="website" />
       <meta
         property="og:description"
-        content="Youth baseball and softball in Walnut Creek and Concord, California"
+        content="Field weather, status, and forecasts for Walnut Creek Little League."
       />
-      <meta
-        property="og:url"
-        content="http://www.wclittleleague.org/page/show/5412507-home"
-      />
+      <meta property="og:url" content={pageUrl} />
       <meta property="og:site_name" content="Walnut Creek Little League" />
       <meta
         property="og:image"
