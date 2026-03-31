@@ -9,7 +9,13 @@ import Header from "@/components/Header";
 import Panels from "@/components/Panels";
 import PrimaryCard from "@/components/PrimaryCard";
 
-export default function Field(props) {
+export async function getServerSideProps({ params }) {
+  const field = _.get(params, ["field", 0], "");
+  const fieldName = _.get(fields, [field, "name"], "");
+  return { props: { fieldName } };
+}
+
+export default function Field({ fieldName }) {
   const router = useRouter();
   const field = _.get(router.query.field, [0], "");
   const page = _.get(router.query.field, [1], "weather");
@@ -38,7 +44,7 @@ export default function Field(props) {
 
   return (
     <>
-      <Head />
+      <Head fieldName={fieldName} />
       <Header />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <div className="flex flex-col lg:flex-row gap-6">

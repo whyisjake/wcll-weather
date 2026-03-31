@@ -5,10 +5,9 @@ import { useRouter } from "next/router";
 
 const SITE_URL = "https://fields.wclittleleague.org";
 
-export default function NewHead() {
+export default function NewHead({ fieldName } = {}) {
   const router = useRouter();
-  let { field } = router.query;
-  const name = _.get(fields, [field, "name"], "");
+  const name = fieldName || _.get(fields, [router.query.field, "name"], "");
   const pageTitle = name
     ? `${name} – Walnut Creek Little League`
     : "Walnut Creek Little League Field Weather";
