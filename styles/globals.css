@@ -15,7 +15,7 @@
   }
 
   body {
-    @apply bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300;
+    @apply bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 bg-fixed bg-no-repeat transition-colors duration-300;
   }
 }
 
